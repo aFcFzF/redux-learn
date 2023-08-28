@@ -5,9 +5,16 @@
 import merge from 'webpack-merge';
 import webpack from 'webpack';
 import base from './webpack.base.conf';
+import TerserPlugin from 'terser-webpack-plugin';
 
 const PROD_CONF: webpack.Configuration = merge(base, {
   mode: 'production',
+
+  output: {
+    sourceMapFilename: './sourcemap/[file].map[query]',
+  },
+
+  devtool: 'source-map',
 
   plugins: [
     new webpack.DefinePlugin({
@@ -16,9 +23,21 @@ const PROD_CONF: webpack.Configuration = merge(base, {
   ],
 
   optimization: {
-    minimize: false,
+    minimize: true,
+    minimizer: [new TerserPlugin({
+      terserOptions: {
+        compress: {
+          // 现网不要console和debugger
+          drop_console: true,
+          drop_debugger: true,
+        },
+      },
+    })],
     noEmitOnErrors: true,
-    splitChunks: false,
+    // 开启则需要将分片也引入
+    // splitChunks: {
+    //   chunks: 'all',
+    // },
   },
 });
 

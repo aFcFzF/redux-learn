@@ -4,25 +4,29 @@
 
 import path from 'path';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { Configuration, DefinePlugin } from 'webpack';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import { Configuration, DefinePlugin, RuleSetUseItem } from 'webpack';
+import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
+import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import commonConfig from './common.config.json';
 
 export const IS_DEV = process.env.NODE_ENV === 'development';
 
-export const PUBLIC_PATH = '/';
-
-export const FILE_NAME = '[name]/[name].[chunkhash].js';
-
 export const resolve = (...args: string[]): string => path.resolve(__dirname, ...args);
 
-const titleMap: Record<string, string> = {
-  app: `客户端${IS_DEV ? '-dev' : ''}`,
-  admin: `管理端${IS_DEV ? '-dev' : ''}`,
-};
-
-const lessLoader = [
-  MiniCssExtractPlugin.loader,
-  'css-loader',
+const getLessLoader = (cssMod = false): RuleSetUseItem[] => [
+  IS_DEV ? 'style-loader' : MiniCssExtractPlugin.loader,
+  cssMod ? '@teamsupercell/typings-for-css-modules-loader' : '',
+  {
+    loader: 'css-loader',
+    options: {
+      modules: cssMod && {
+        localIdentName: '[name]__[local]___[hash:base64:5]',
+        exportLocalsConvention: 'camelCaseOnly',
+      },
+    },
+  },
   {
     loader: 'less-loader',
     options: {
@@ -31,71 +35,62 @@ const lessLoader = [
       },
     },
   },
-];
-
-const entry = {
-  app: './src/app/index.tsx',
-};
+  {
+    loader: 'style-resources-loader',
+    options: {
+      patterns: [ // 只有一条时也可以写成对象形式
+        path.resolve(__dirname, '../src/common/style/index.global.less'),
+      ],
+      injector: 'append', // 如果在样式文件之后导入就加此行配置
+    },
+  },
+].filter(Boolean);
 
 const CONFIG: Configuration = {
-  entry,
+  context: path.resolve(__dirname, '../'),
+
+  entry: {
+    app: resolve('../src/app.tsx'),
+  },
 
   output: {
-    filename: '[name]/[name].[chunkhash].js',
-    publicPath: PUBLIC_PATH,
-    path: resolve('../dist/'),
+    ...commonConfig.output,
+    filename: '[name].[chunkhash].js',
+    path: resolve('../docs'),
+    assetModuleFilename: `${commonConfig.assetsPath}/[hash][ext][query]`,
   },
 
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.less'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.less', '.ttf'],
     alias: {
-      '@': resolve('../src/'),
-      '@api': resolve('../src/common/api'),
+      '@src': resolve('../src'),
+      '@': path.resolve(__dirname, '../src'),
     },
+    plugins: [
+      new TsconfigPathsPlugin({}),
+    ],
+    fallback: { url: false },
   },
 
   module: {
     rules: [
       {
-        test: /\.[tj]sx?$/,
-        use: ['babel-loader'],
+        test: /\.tsx?$/,
+        use: 'babel-loader',
         include: [
-          resolve('../src'),
-          resolve('../node_modules'),
+          resolve('../src/'),
+          resolve('../types/'),
         ],
       },
       {
         test: /\.less$/,
-        exclude: [
-          /\.global\.less$/,
-        ],
-        use: [
-          MiniCssExtractPlugin.loader,
-          {
-            loader: '@teamsupercell/typings-for-css-modules-loader',
-          },
-          {
-            loader: 'css-loader',
-            options: {
-              modules: {
-                localIdentName: '[name]__[local]___[hash:base64:5]',
-                exportLocalsConvention: 'camelCaseOnly',
-              },
-            },
-          },
-          {
-            loader: 'less-loader',
-            options: {
-              lessOptions: {
-                javascriptEnabled: true,
-              },
-            },
-          },
-        ],
+        exclude: /\.global\.less$/,
+        include: resolve('../src/'),
+        use: getLessLoader(true),
       },
       {
         test: /\.global\.less$/,
-        use: lessLoader,
+        use: getLessLoader(false),
       },
       {
         test: /\.css$/,
@@ -106,52 +101,35 @@ const CONFIG: Configuration = {
       },
       {
         test: /\.(jpeg|jpg|png|gif|svg)$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 10000,
-              name: 'static/img/[name].[hash:8].[ext]',
-            },
-          },
-        ],
+        type: 'asset/resource',
       },
       {
         test: /\.(eot|ttf|woff|woff2)$/,
-        use: {
-          loader: 'file-loader',
-          options: {
-            name: 'static/font/[name].[hash:8].[ext]',
-          },
-        },
+        type: 'asset/resource',
       },
     ],
   },
 
   plugins: [
     new DefinePlugin({
-      'process.env.BROWSER': true,
-      __DEV__: IS_DEV,
+      'process.env.BROWSER': JSON.stringify(true),
+      __DEV__: JSON.stringify(IS_DEV),
+      __ENV__: JSON.stringify(process.env.NODE_ENV),
     }),
+    new ForkTsCheckerWebpackPlugin(),
     new MiniCssExtractPlugin({
-      filename: '[name]/[name].[hash].css',
-      chunkFilename: '[name]/[name].[hash].css',
+      filename: '[name].[hash].css',
+      chunkFilename: '[name].[hash].css',
     }),
-    ...Object.keys(entry).map(item => new HtmlWebpackPlugin({
-      title: titleMap[item] || '',
-      mockData: IS_DEV ? JSON.stringify(mockData) : '{}',
-      filename: `${item}/index.html`,
-      chunks: [item],
+    new WebpackManifestPlugin({}),
+    new HtmlWebpackPlugin({
+      title: 'redux-learn',
+      filename: 'index.html',
+      chunks: ['app'],
       template: path.join(__dirname, 'template.html'),
       inject: true,
-    })),
+    }),
   ],
-
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-    }
-  }
 };
 
 export default CONFIG;

@@ -1,0 +1,7 @@
+{
+  "devPort": 8838,
+  "output": {
+    "publicPath": "/"
+  },
+  "assetsPath": "assets"
+}
