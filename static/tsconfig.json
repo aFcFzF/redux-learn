@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "es5",
     "rootDir": ".",
-    "typeRoots": ["./node_modules/@types", "./src/static/types"],
     "jsx": "react-jsx",
     "baseUrl": ".",
     "module": "CommonJS",
@@ -14,14 +13,5 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
-    "paths": {
-      "@/*": ["src/*"],
-      "@api": ["src/common/api"],
-      "@api/*": ["src/common/api/*"],
-    }
-  },
-  "include": ["src", "build/*"],
-  "exclude": [
-    "src/preScript.js"
-  ]
+  }
 }

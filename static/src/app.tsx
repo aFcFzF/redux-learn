@@ -4,7 +4,9 @@
  */
 
 import { render } from 'react-dom';
+import {Home} from './pages/home';
+import React from 'react';
 
 const root = document.querySelector('#app');
 
-render(<div>1111</div>, root);
+render(<Home />, root);
