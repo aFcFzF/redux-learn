@@ -1,6 +1,6 @@
 {
-  "psi-header.config": {
-    "author": "afcfzf",
-    "authorEmail": "9301462@qq.com"
-  }
+  "psi-header.variables": [
+    ["author", "afcfzf"],
+    ["authoremail", "9301462@qq.com"]
+  ]
 }

@@ -1,17 +1,19 @@
 /**
  * @file index.tsx
- * @author markJia(markjia@tencent.com)
+ * @author markJia(9301462@qq.com)
  */
 
-import React from 'react';
-import { useRefCallback } from '@tencent/glue-react-use';
+import { UserInfo } from '../../components/UserInfo';
 
 export const Home = (): JSX.Element => {
-  const onClick = useRefCallback(() => {
+  const onClick = (): void => {
     console.log('可以的');
-  });
+  };
 
   return (
-    <div onClick={onClick}>home页</div>
+    <div>
+      <div><UserInfo /></div>
+      <div onClick={onClick}>home页</div>
+    </div>
   );
 };
