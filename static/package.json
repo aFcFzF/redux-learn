@@ -16,8 +16,8 @@
     "@soda/friendly-errors-webpack-plugin": "^1.8.1",
     "@tencent/eslint-config-tencent": "^1.0.4",
     "@types/node": "^20.5.0",
-    "@types/react": "18",
-    "@types/react-dom": "18",
+    "@types/react": "17",
+    "@types/react-dom": "17",
     "@types/redux-logger": "^3.0.13",
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
@@ -43,14 +43,15 @@
   "dependencies": {
     "@babel/runtime": "^7.26.0",
     "ahooks": "^3.8.4",
-    "antd": "^5.22.7",
-    "react": "18",
-    "react-dom": "18",
+    "antd": "5.10",
+    "react": "17",
+    "react-dom": "17",
     "react-redux": "^9.2.0",
     "redux": "^4.0.1",
     "redux-promise": "^0.6.0",
     "redux-thunk": "^2.1.0",
-    "terser-webpack-plugin": "^5.3.11"
+    "terser-webpack-plugin": "^5.3.11",
+    "zustand": "^5.0.3"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack server --config ./build/webpack.dev.conf.ts",

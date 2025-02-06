@@ -12,7 +12,15 @@ import {
   Middleware,
 } from 'redux';
 import thunkMiddleware from 'redux-thunk';
-import { AppAction, ContextState, UserNameAction } from '../store/store';
+import { ContextState } from '../store/store';
+
+export interface AppAction<T extends string, D> extends Action<T> {
+  type: T;
+  payload: D;
+}
+
+export type UserNameAction = AppAction<'update_user_name', { userName: string; }>;
+
 
 const userInfoReducer = (state: ContextState['userInfo'] = { userName: 'not_login', userAge: -1 }, action: UserNameAction): ContextState['userInfo'] => {
   // console.log('执行了[userInfoReducer]', state, action);
