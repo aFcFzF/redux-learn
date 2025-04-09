@@ -6,6 +6,9 @@ import merge from 'webpack-merge';
 import webpack from 'webpack';
 import base from './webpack.base.conf';
 import TerserPlugin from 'terser-webpack-plugin';
+import FileManagerPlugin from 'filemanager-webpack-plugin';
+import path from 'path';
+import commonConfig from './common.config.json';
 
 const PROD_CONF: webpack.Configuration = merge(base, {
   mode: 'production',
@@ -14,11 +17,23 @@ const PROD_CONF: webpack.Configuration = merge(base, {
     sourceMapFilename: './sourcemap/[file].map[query]',
   },
 
-  devtool: 'source-map',
+  devtool: false,
 
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"production"',
+    }),
+    new FileManagerPlugin({
+      events: {
+        onEnd: {
+          move: [
+            {
+              source: path.resolve(__dirname, '../dist/', commonConfig.assetsPath, 'index.html'), // Webpack 默认输出目录
+              destination: path.resolve(__dirname, '../dist/', 'index.html'), // 目标目录
+            },
+          ],
+        },
+      },
     }),
   ],
 

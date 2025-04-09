@@ -10,6 +10,7 @@ import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import commonConfig from './common.config.json';
+// import HtmlWebpackInjectAttributesPlugin from 'html-webpack-inject-attributes-plugin';
 
 export const IS_DEV = process.env.NODE_ENV === 'development';
 
@@ -56,8 +57,10 @@ const CONFIG: Configuration = {
   output: {
     ...commonConfig.output,
     filename: '[name].[chunkhash].js',
-    path: resolve('../docs'),
+    path: resolve('../dist/', commonConfig.assetsPath),
     assetModuleFilename: `${commonConfig.assetsPath}/[hash][ext][query]`,
+    library: 'micro-baizhun-dashboard-[name]',
+    libraryTarget: 'umd',
   },
 
   resolve: {
@@ -127,8 +130,11 @@ const CONFIG: Configuration = {
       filename: 'index.html',
       chunks: ['app'],
       template: path.join(__dirname, 'template.html'),
-      inject: true,
+      inject: 'body',
     }),
+    // new HtmlWebpackInjectAttributesPlugin({
+    //   entry: 'true',
+    // }),
   ],
 };
 

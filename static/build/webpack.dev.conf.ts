@@ -24,7 +24,7 @@ const DEV_CONF = merge(base, {
     },
     historyApiFallback: {
       rewrites: [
-        { from: /^\/(.*)/, to: '/index.html' },
+        { from: /^\/baizhun(.*)/, to: '/baizhun/index.html' },
       ],
     },
   },

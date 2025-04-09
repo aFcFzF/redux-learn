@@ -41,12 +41,19 @@
     "webpack-merge": "^5.9.0"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.0.0",
     "@babel/runtime": "^7.26.0",
     "ahooks": "^3.8.4",
     "antd": "5.10",
+    "axios": "^1.8.4",
+    "copy-webpack-plugin": "^13.0.0",
+    "filemanager-webpack-plugin": "^8.0.0",
+    "html-webpack-inject-attributes-plugin": "^1.0.6",
     "react": "17",
     "react-dom": "17",
     "react-redux": "^9.2.0",
+    "react-router": "^6",
+    "react-router-dom": "^6",
     "redux": "^4.0.1",
     "redux-promise": "^0.6.0",
     "redux-thunk": "^2.1.0",
@@ -55,6 +62,7 @@
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack server --config ./build/webpack.dev.conf.ts",
-    "prod": "cross-env NODE_ENV=development webpack --config ./build/webpack.prod.conf.ts"
+    "rmDist": "rm -fr ./dist",
+    "prod": "npm run rmDist && cross-env NODE_ENV=development webpack --config ./build/webpack.prod.conf.ts"
   }
 }
